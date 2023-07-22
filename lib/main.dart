@@ -114,29 +114,42 @@ class CircleDivider extends StatelessWidget {
 class CircleDividerPainter extends CustomPainter {
   final double radius;
   final int numberOfDivisions;
-  final List<Color> segmentColors; // List of colors for each segment
-  final List<double>
-      segmentValues; // List of values for each segment, should be in 0-1
-  final Paint circlePaint;
-  final Paint linePaint;
+  final List<Color> segmentColors;
+  final List<double> segmentValues;
+  final Color circleColor;
+  final Color lineColor;
+
   CircleDividerPainter({
     required this.radius,
     required this.numberOfDivisions,
     required this.segmentColors,
     required this.segmentValues,
-    required Color circleColor,
-    required Color lineColor,
-  })  : circlePaint = Paint()..color = circleColor,
-        linePaint = Paint()
-          ..color = lineColor
-          ..strokeWidth = 1;
+    required this.circleColor,
+    required this.lineColor,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    // Draw the circle with the given radius
-    // canvas.drawCircle(center, radius, circlePaint);
-    // Calculate the angle between two adjacent lines
     final angleBetweenLines = 2 * pi / numberOfDivisions;
+
+    final circlePaint = Paint()..color = circleColor;
+    final linePaint = Paint()
+      ..color = lineColor
+      ..strokeWidth = 1;
+
+    final (startx1, starty1) = getXYcomponents(radius, 0, offset: center);
+    final polygonPath = Path()..moveTo(startx1, starty1);
+    for (int i = 0; i < numberOfDivisions; i++) {
+      final startAngle = i * angleBetweenLines;
+      final sweepAngle = angleBetweenLines;
+      final endAngle = startAngle + sweepAngle;
+      final (x2, y2) = getXYcomponents(radius, endAngle, offset: center);
+      polygonPath.lineTo(x2, y2);
+    }
+    polygonPath.close();
+    canvas.drawPath(polygonPath, circlePaint);
+
     // Draw the lines originating from the center
     for (int i = 0; i < numberOfDivisions; i++) {
       final startAngle = i * angleBetweenLines;
@@ -197,4 +210,8 @@ class CircleDividerPainter extends CustomPainter {
   final x = (radius * cos(radians)) + offset.dx;
   final y = (radius * sin(radians)) + offset.dy;
   return (x, y);
+}
+
+double distanceBetween(Offset p1, Offset p2) {
+  return sqrt(pow(p1.dx - p2.dx, 2) + pow(p1.dy - p2.dy, 2));
 }
