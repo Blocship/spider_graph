@@ -110,12 +110,12 @@ class CircleDividerPainter extends CustomPainter {
     // draw
     canvas.drawPath(polygonPath, backgroundPolygonPaint);
     canvas.drawPath(polygonPath, polygonBorderPaint);
-    for (int i = 0; i < segmentPaths.length; i++) {
-      canvas.drawPath(segmentPaths[i], Paint()..color = segmentColors[i]);
-    }
     for (int i = 0; i < separatorLines.length; i++) {
       canvas.drawLine(
           center.toOffset, separatorLines[i].toOffset, separatorLinePaint);
+    }
+    for (int i = 0; i < segmentPaths.length; i++) {
+      canvas.drawPath(segmentPaths[i], Paint()..color = segmentColors[i]);
     }
   }
 
